@@ -345,8 +345,71 @@ Estos principios fueron expuestos por [Robert C. Martin](https://es.wikipedia.or
 ## Interface Segregation (ISP)
 
 - **Definición**:
+
+    El principio de Segregación de Interfaces establece que las interfaces deben ser específicas y enfocadas en una única responsabilidad, de manera que los clientes (clases que implementan las interfaces) no se vean obligados a depender de métodos que no utilizan. Esto implica dividir interfaces grandes y genéricas en varias interfaces más pequeñas y especializadas, cada una diseñada para satisfacer las necesidades específicas de los clientes que las implementan. Este principio está estrechamente relacionado con el principio de responsabilidad única (SRP), ya que ambos buscan reducir la complejidad y mejorar la mantenibilidad del código.
+
 - **Consecuencias**:
+
+    Al aplicar este principio en el código, conseguimos lo siguiente:
+  - **Mayor flexibilidad y mantenibilidad**: Las interfaces pequeñas y específicas facilitan la implementación y el mantenimiento del código, ya que los cambios en una funcionalidad no afectan a otras partes del sistema.
+  - **Reducción de dependencias innecesarias**: Los clientes solo implementan los métodos que realmente necesitan, evitando la sobrecarga de código innecesario.
+  - **Mejor comprensión del código**: Las interfaces más pequeñas y específicas son más fáciles de entender y utilizar, lo que mejora la claridad del diseño.
+  - **Facilita la reutilización del código**: Las interfaces especializadas pueden ser reutilizadas en diferentes contextos sin necesidad de modificar su implementación.
+  - **Promueve un diseño modular**: Al dividir las interfaces en partes más pequeñas, se fomenta un diseño más modular y desacoplado.
+
 - **Ejemplo de uso**:
+
+    Dentro de una aplicación de logistica encargada del envío de paquetería, se tiene la posibilidad de realizar las siguientes tareas:
+  - Los clientes tienen la posibilidad de realizar un seguimiento al paquete
+  - La operación debe crear guia para un paquete al momento de recibirlo
+  - Cada proceso logistico debe registrar estado del paquete
+
+  - **Clases mal diseñadas**: Se creó una interfaz llamada *IPackingManager* que contiene todos los métodos permitidos dentro de la gestión de paquetes. Esto obliga a cualquier cliente a tener que implementar todos los métodos aunque no los necesite.
+
+    ```csharp
+    //Estado del paquete
+    public sealed record TrackState(
+        string TrackNumber, 
+        string State, 
+        DateTime Date
+    );
+
+    public interface IPackingManager
+    {
+        string GenerateTrackNumber();
+        List<TrackState> GetStates(string trackNumber);
+        void RegisterState(TrackState state);
+    }
+    ```
+
+  - **Clases bien diseñadas**: Al aplicar el principio **ISP** se logra separar cada responsabilidad dentro de una sola interfaz, permitiendo que cada usuario elija las responsabilidades que necesite.
+
+    ```csharp
+    //Estado del paquete
+    public sealed record TrackState(
+        string TrackNumber, 
+        string State, 
+        DateTime Date
+    );
+
+    // Interfaz encargada de la generacion de guias
+    public interface ITrackIdProvider
+    {
+        string GenerateTrackNumber();
+    }
+
+    // Interfaz encargada de consulta de estados
+    public interface ITrackingStatesProvider
+    {
+        List<TrackState> GetStates(string trackNumber);
+    }
+
+    // Interfaz encargada de agregar estados
+    public interface ITrackStateRegister
+    {
+        void RegisterState(TrackState state);
+    }
+    ```
 
 [Volver al inicio](#tabla-de-contenido)
 
@@ -355,7 +418,16 @@ Estos principios fueron expuestos por [Robert C. Martin](https://es.wikipedia.or
 ## Dependency Inversion Principle (DIP)
 
 - **Definición**:
+
+    El principio de Inversión de Dependencias establece que las dependencias deben ser invertidas, es decir, que las clases no deben depender de clases concretas, sino de interfaces abstractas. Esto permite que las clases puedan ser reutilizadas y que el código sea más flexible y escalable.
+
 - **Consecuencias**:
+
+    Al aplicar este principio, el código obtiene:
+  - **Mayor flexibilidad**: Las clases pueden ser reutilizadas en diferentes contextos.
+  - **Mejor mantenibilidad**: El código es más fácil de mantener y modificar.
+  - **Reducción de dependencias**: Las clases no dependen de clases concretas, sino de interfaces abstractas.
+
 - **Ejemplo de uso**:
 
 [Volver al inicio](#tabla-de-contenido)
