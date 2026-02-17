@@ -259,8 +259,84 @@ Estos principios fueron expuestos por [Robert C. Martin](https://es.wikipedia.or
 ## Liskov Substitution Principle (LSP)
 
 - **Definición**:
+
+    El principio de Sustitución de Liskov, propuesto por Barbara Liskov, establece que las clases derivadas deben ser completamente intercambiables con sus clases base sin alterar el comportamiento esperado del programa. En otras palabras, si una clase *B* hereda de una clase *A*, cualquier instancia de *B* debe poder sustituir a una instancia de *A* sin que el sistema pierda su funcionalidad o genere errores. Este principio se basa en la idea de que las clases derivadas deben cumplir con el contrato definido por la clase base.
+
 - **Consecuencias**:
+
+    Al aplicar el principio de Sustitución de Liskov, el código obtiene los siguientes beneficios:
+
+  - **Mayor flexibilidad y reutilización**: Las clases derivadas pueden ser utilizadas en lugar de sus clases base sin necesidad de realizar modificaciones adicionales, lo que facilita la extensión y el mantenimiento del sistema.
+  - **Reducción de errores**: Al garantizar que las clases hijas puedan sustituir a las clases base sin alterar el comportamiento esperado, se minimizan los errores en tiempo de ejecución.
+  - **Facilidad para realizar pruebas**: Al cumplir con este principio, se pueden realizar pruebas unitarias de las clases derivadas de manera independiente, ya que se garantiza que respetan el contrato definido por la clase base.
+  - **Mejor comprensión del código**: El diseño del sistema se vuelve más claro y predecible, ya que las clases derivadas mantienen el comportamiento esperado de las clases base.
+  - **Promueve el uso de polimorfismo**: Facilita la implementación de soluciones polimórficas, permitiendo que el código sea más genérico y adaptable a cambios futuros.
+
 - **Ejemplo de uso**:
+
+    Dentro de un sistema de generacion de reportes, se tiene la posibilidad de cargar el reporte en diferentes tipos de destinos como por ejemplo: SFTP, FTP, Via Email entre otros...
+
+  - **Clases mal diseñadas**: El desarrollador para cumplir con el requerimiento asignado, crea una clase principal *Notifier* sobre la cual crea los diferentes metodos encargados de cada tipo de envío.
+
+    ```csharp
+    //Clase encargada de enviar las notificaciones del reporte
+    public class Notifier
+    {
+        public void NotifySFTP(string reportPath)
+        {
+            //lógica para cargar a SFTP
+            Console.WriteLine("Notificación generada para SFTP");
+        }
+
+        public void NotifyFTP(string reportPath)
+        {
+            //lógica para cargar a FTP
+            Console.WriteLine("Notificación generada para FTP");
+        }
+
+        public void NotifyEmail(string reportPath)
+        {
+            //lógica para cargar a email
+            Console.WriteLine("Notificación generada para Email");
+        }
+    }
+    ```
+
+  - **Clases bien diseñadas**: Aplicando el principio **LSP** podemos refactorizar esta solución de la siguiente manera: La clase *Notifier* establece el contrato que las demás implementaciones usarán. Se debe crear para cada tipo de notificación una implementación diferente.
+
+    ```csharp
+        public interface Notifier
+        {
+            void Notify(string reportPath);
+        }
+
+        public sealed class SFTPNotifier : Notifier
+        {
+            public void Notify(string reportPath)
+            {
+                //lógica para cargar a SFTP
+                Console.WriteLine("Notificación generada para SFTP");
+            }
+        }
+
+        public sealed class FTPNotifier : Notifier
+        {
+            public void Notify(string reportPath)
+            {
+                //lógica para cargar a FTP
+                Console.WriteLine("Notificación generada para FTP");
+            }
+        }
+
+        public sealed class EmailNotifier : Notifier
+        {
+            public void Notify(string reportPath)
+            {
+                //lógica para cargar a Email
+                Console.WriteLine("Notificación generada para Email");
+            }
+        }
+    ```
 
 [Volver al inicio](#tabla-de-contenido)
 
