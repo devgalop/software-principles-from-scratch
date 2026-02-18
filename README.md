@@ -65,6 +65,76 @@ Se trata de dividir el sistema en diferentes secciones, cada una de estas es res
 
 ## DRY
 
+El principio **Don't Repeat Yourself (DRY)** establece que **cada pieza de conocimiento o lógica dentro de un sistema debe tener una única representación**. Esto significa evitar la duplicación de código, datos, configuraciones o procesos, promoviendo la centralización y reutilización de elementos comunes.
+
+Aplicar este principio mejora la **mantenibilidad del sistema**, ya que los cambios solo deben realizarse en un único lugar, reduciendo la probabilidad de errores y facilitando la evolución del software.
+
+Ejemplo: El contexto del ejemplo es sobre una aplicación para calcular impuestos sobre productos Nacionales e Internacionales.
+
+- **Clases mal diseñadas**: Se crea un servicio *TaxesService* encargado de generar los impuestos cada uno con su lógica particular para calcular impuestos sobre los productos. Claramente, se identifica que se está duplicando código que puede estar todo en una misma función.
+
+    ```csharp
+    public record Product(string Name, float Price);
+
+    public class TaxesService
+    {
+        private List<Product> _products = [];
+
+        public void AddProducts(List<Product> products)
+        {
+            _products = products;
+        }
+
+        public float GetLocalTaxes(){
+            float total = _products.Select(p => p.Price).Sum();
+            return total * 0.15;
+        }
+
+        public float GetTotalWithLocalTaxes(){
+            float total = _products.Select(p => p.Price).Sum();
+            return total + (total * 0.15);
+        }
+
+        public float GetInternationalTaxes(){
+            float total = _products.Select(p => p.Price).Sum();
+            return total * 0.19;
+        }
+
+        public float GetTotalWithInternationalTaxes(){
+            float total = _products.Select(p => p.Price).Sum();
+            return total + (total * 0.19);
+        }
+    }
+    ```
+
+- **Clases bien diseñadas**: Aplicando el principio **DRY** podemos refactorizar el código de la siguiente manera.
+
+    ```csharp
+    public record Product(string Name, float Price);
+
+    public class TaxesService
+    {
+        private List<Product> _products = [];
+        private floar _total;
+        private const float LOCAL_TAX_PERCENT = 0.15;
+        private const float INTERNATIONAL_TAX_PERCENT = 0.19;
+
+        public void AddProducts(List<Product> products)
+        {
+            _products = products;
+            _total = products.Select(p => p.Price).Sum();
+        }
+
+        public float GetTaxValue(float taxPercent){
+            return _total * taxPercent;
+        }
+
+        public float GetTotalWithTaxes(float texPercent){
+            return _total + GetTaxValue(taxPercent);
+        }
+    }
+    ```
+
 [Volver al inicio](#tabla-de-contenido)
 
 ---
