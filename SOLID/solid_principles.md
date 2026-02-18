@@ -419,7 +419,7 @@ Estos principios fueron expuestos por [Robert C. Martin](https://es.wikipedia.or
 
 - **Definición**:
 
-    El principio de Inversión de Dependencias establece que las dependencias deben ser invertidas, es decir, que las clases no deben depender de clases concretas, sino de interfaces abstractas. Esto permite que las clases puedan ser reutilizadas y que el código sea más flexible y escalable.
+    l principio de Inversión de Dependencias establece que los módulos de alto nivel no deben depender de módulos de bajo nivel. Ambos deben depender de abstracciones (interfaces). Además, las abstracciones no deben depender de los detalles, sino que los detalles deben depender de las abstracciones. Esto permite que las clases sean más flexibles, reutilizables y fáciles de mantener.
 
 - **Consecuencias**:
 
@@ -429,5 +429,64 @@ Estos principios fueron expuestos por [Robert C. Martin](https://es.wikipedia.or
   - **Reducción de dependencias**: Las clases no dependen de clases concretas, sino de interfaces abstractas.
 
 - **Ejemplo de uso**:
+
+    En una aplicación encargada de la gestión de usuarios, se tiene un proveedor que genera el token de acceso para nuestros dispositivos.
+
+  - **Clases mal diseñadas**: En este diseño, la clase User está directamente acoplada a la implementación concreta de GoogleAuthenticatorTokenProvider. Esto significa que si en el futuro se necesita cambiar el proveedor de tokens o agregar uno nuevo, será necesario modificar la clase User, lo que va en contra del principio de abierto/cerrado (OCP). Además, este acoplamiento dificulta las pruebas unitarias, ya que no es posible sustituir fácilmente el proveedor de tokens por un mock o stub.
+
+    ```csharp
+    public class User(string Name, string Id)
+    {
+        public string GetToken()
+        {
+            GoogleAuthenticatorTokenProvider tokenProvider = neW();
+            return tokenProvider.GenerateToken();
+        }
+    }
+
+    public class GoogleAuthenticatorTokenProvider
+    {
+        public string GenerateToken()
+        {
+            //lógica de generación de token
+            Console.WriteLine("Generando token con proveedor Google Authenticator");
+            return "TOKEN_GENERADO";
+        }
+    }
+    ```
+
+  - **Clases bien diseñadas**: En este ejemplo, se utiliza la técnica de Inyección de Dependencias (Dependency Injection) para pasar la implementación concreta de ITokenProvider al constructor de la clase TokenProvider. Esto permite cambiar fácilmente el proveedor de tokens sin modificar la clase TokenProvider, lo que hace que el sistema sea más flexible y fácil de mantener
+
+    ```csharp
+    //La clase usuario pertenece al dominio y no debe ser alterada por la infraestructura
+    public class User(string Name, string Id)
+    {}
+
+    //Esta clase es encargada de proveer al cliente de tokens generados sin importar el proveedor
+    public class TokenService(ITokenProvider provider)
+    {
+        public string GetToken()
+        {
+            return provider.GenerateToken();
+        }
+    }
+
+    //Contrato para proveer tokens
+    public interface ITokenProvider
+    {
+        string GenerateToken();
+    }
+
+    //Proveedor especializado en generación de tokens
+    public class GoogleAuthenticatorTokenProvider : ITokenProvider
+    {
+        public string GenerateToken()
+        {
+            //lógica de generación de token
+            Console.WriteLine("Generando token con proveedor Google Authenticator");
+            return "TOKEN_GENERADO";
+        }
+    }
+    ```
 
 [Volver al inicio](#tabla-de-contenido)
