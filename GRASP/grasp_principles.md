@@ -22,3 +22,6 @@ Los principios que contiene son:
 - **Pure Fabrication**: Provee clases nuevas como helpers o conectores.
 - **Indirection**: Usa intermediarios o abstracciones para desacoplar.
 - **Polymorphisim**: Permite a objetos diferentes ser tratados por igual a través de una interfaz.
+
+[Object Oriented Design With GRASP](https://patrickkarsh.medium.com/object-oriented-design-with-grasp-principles-8049fa63e52)
+[GRASP Design Principles in OOAD](https://www.geeksforgeeks.org/system-design/grasp-design-principles-in-ooad/)
